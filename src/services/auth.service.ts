@@ -18,9 +18,8 @@ export const SLogin = async (
             deletedAt: null,
         },
         });
-
     if (!admin) {
-        throw new Error("Invalid credentials");
+        throw new Error("Invalid credentialss");
     }
     
     const isPasswordValid = await bcrypt.compare(password, admin.password);
@@ -82,6 +81,67 @@ export const SCreate = async (
         message: "Admin created successfully",
     };
 };
+
+export const SUpdate = async (
+    id: number,
+    updateFields: {
+        email?: string;
+        name?: string;
+        password?: string;
+        username?: string;
+    }
+): Promise<IGlobalResponse> => {
+    const admin = await prisma.admin.findUnique({
+        where: { id },
+    });
+    
+    if (!admin || admin.deletedAt) {
+        throw new Error("Admin not found");
+    }
+    
+    const updateData: any = {};
+
+    if (updateFields.email) {
+        updateData.email = updateFields.email;
+    }
+    if (updateFields.name) {
+        updateData.name = updateFields.name;
+    }
+    if (updateFields.username) {
+        updateData.username = updateFields.username;
+    }
+    if (updateFields.password) {
+        updateData.password = await bcrypt.hash(updateFields.password, 10);
+    }
+    
+    await prisma.admin.update({
+        where: { id },
+        data: updateData,
+    });
+
+    return {
+        status: true,
+        message: "Admin updated successfully",
+    };
+}
+
+export const SDelete = async (id: number): Promise<IGlobalResponse> => {
+    const admin = await prisma.admin.findUnique({
+        where: { id },
+    });
+    if (!admin || admin.deletedAt) {
+        throw new Error("Admin not found");
+    }
+    await prisma.admin.update({
+        where: { id },
+        data: { deletedAt: new Date() },
+    });
+    return {
+        status: true,
+        message: "Admin deleted successfully",
+    };
+}
+
 const UGenereateToken = (payload: object): string => {
     return jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
 };
