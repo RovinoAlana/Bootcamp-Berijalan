@@ -142,6 +142,29 @@ export const SDelete = async (id: number): Promise<IGlobalResponse> => {
     };
 }
 
+export const SGetAllAdmins = async (): Promise<IGlobalResponse> => {
+    const admins = await prisma.admin.findMany({
+        where: { deletedAt: null },
+        select: {
+            id: true,
+            username: true,
+            email: true,
+            name: true,
+            isActive: true,
+            createdAt: true,
+            updatedAt: true,
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+    });
+    return {
+        status: true,
+        message: "Admins retrieved successfully",
+        data: admins,
+    };
+};
+
 const UGenereateToken = (payload: object): string => {
     return jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
 };

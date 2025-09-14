@@ -3,9 +3,11 @@ import cors from "cors";
 import { MErrorHandler } from "./middlewares/error.middleware.js";
 import authRoutes from "./routes/auth.route.js"; 
 import { connectRedis } from "./configs/redis.config.js"; 
+import "dotenv/config";
+connectRedis();
+
 const app = express();
 
-connectRedis();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
