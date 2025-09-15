@@ -4,6 +4,8 @@ import { MErrorHandler } from "./middlewares/error.middleware.js";
 import authRoutes from "./routes/auth.route.js"; 
 import { connectRedis } from "./configs/redis.config.js"; 
 import "dotenv/config";
+import { initializeCronJobs } from "./configs/scheduler.config.js";
+initializeCronJobs();
 connectRedis();
 
 const app = express();
