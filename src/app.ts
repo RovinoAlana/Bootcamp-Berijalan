@@ -2,9 +2,11 @@ import express from "express";
 import cors from "cors";
 import { MErrorHandler } from "./middlewares/error.middleware.js";
 import authRoutes from "./routes/auth.route.js"; 
+import queueRoutes from "./routes/queue.route.js";
 import { connectRedis } from "./configs/redis.config.js"; 
 import "dotenv/config";
 import { initializeCronJobs } from "./configs/scheduler.config.js";
+
 initializeCronJobs();
 connectRedis();
 
@@ -15,6 +17,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/queue", queueRoutes);
 app.use(MErrorHandler);
 
 app.listen(3000, () => {

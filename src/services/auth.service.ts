@@ -2,9 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import type{ IGlobalResponse } from "../interfaces/global.interface.js";
 import type{ ILoginResponse } from "../interfaces/global.interface.js";
-import jwt from "jsonwebtoken";
+import { UGenerateToken } from "../utils/jwt.util.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "secret_key";
 const prisma = new PrismaClient();
 
 export const SLogin = async (
@@ -27,12 +26,7 @@ export const SLogin = async (
         throw new Error("Invalid credentials");
     }
     
-    const token = UGenereateToken({
-        id: admin.id,
-        username: admin.username,
-        email: admin.email,
-        name: admin.name,
-    });
+    const token = await UGenerateToken(admin);
 
     return {
         status: true,
@@ -165,6 +159,6 @@ export const SGetAllAdmins = async (): Promise<IGlobalResponse> => {
     };
 };
 
-const UGenereateToken = (payload: object): string => {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
-};
+// const UGenereateToken = (payload: object): string => {
+//     return jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
+// };
