@@ -158,7 +158,3 @@ export const SGetAllAdmins = async (): Promise<IGlobalResponse> => {
         data: admins,
     };
 };
-
-// const UGenereateToken = (payload: object): string => {
-//     return jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
-// };
