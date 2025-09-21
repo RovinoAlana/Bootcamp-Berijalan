@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/queue", queueRoutes);
-app.use("/api/v1/counter", counterRoutes);
+app.use("/api/v1/counters", counterRoutes);
 app.use(MErrorHandler);
 
 app.listen(3000, () => {

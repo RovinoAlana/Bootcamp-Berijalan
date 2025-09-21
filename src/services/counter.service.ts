@@ -3,12 +3,6 @@ import type { IGlobalResponse } from "../interfaces/global.interface.js";
 
 const prisma = new PrismaClient();
 
-interface CreateCounterData {
-  name: string;
-  maxQueue?: number;
-  isActive?: boolean;
-}
-
 interface UpdateCounterData {
   name?: string;
   currentQueue?: number;
