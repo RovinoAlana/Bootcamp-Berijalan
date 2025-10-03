@@ -385,3 +385,139 @@ export const SResetQueues = async (
     };
   }
 };
+
+export const SSearchQueue = async (query: string): Promise<IGlobalResponse> => {
+  try {
+    const queueNumber = parseInt(query);
+    
+    let queues;
+    
+    if (!isNaN(queueNumber)) {
+      queues = await prisma.queue.findMany({
+        where: {
+          number: queueNumber,
+        },
+        include: {
+          counter: {
+            select: {
+              id: true,
+              name: true,
+              isActive: true,
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      });
+    } else {
+      queues = await prisma.queue.findMany({
+        where: {
+          counter: {
+            name: {
+              contains: query,
+              mode: 'insensitive'
+            },
+            deletedAt: null
+          }
+        },
+        include: {
+          counter: {
+            select: {
+              id: true,
+              name: true,
+              isActive: true,
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      });
+    }
+
+    const formattedQueues = queues.map(queue => ({
+      id: queue.id,
+      queueNumber: queue.number,
+      status: queue.status,
+      counter: queue.counter ? {
+        id: queue.counter.id,
+        name: queue.counter.name
+      } : null,
+      createdAt: queue.createdAt.toISOString(),
+      updatedAt: queue.updatedAt.toISOString()
+    }));
+
+    if (formattedQueues.length === 0) {
+      return {
+        status: false,
+        message: `Queue dengan nomor atau counter '${query}' tidak ditemukan`,
+        data: null
+      };
+    }
+
+    return {
+      status: true,
+      message: "Queue found successfully",
+      data: formattedQueues
+    };
+  } catch (error: unknown) {
+    console.error("Search queue error:", error);
+    
+    return {
+      status: false,
+      message: error instanceof Error ? error.message : "Failed to search queue",
+      data: null
+    };
+  }
+};
+
+export const SGetAllQueues = async (): Promise<IGlobalResponse> => {
+  try {
+    const queues = await prisma.queue.findMany({
+      where: {
+        status: {
+          in: ["CLAIMED", "CALLED", "SERVED", "SKIPPED"] // Hanya status yang aktif
+        }
+      },
+      include: {
+        counter: {
+          select: {
+            id: true,
+            name: true,
+            isActive: true,
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc' 
+      }
+    });
+
+    const formattedQueues = queues.map(queue => ({
+      id: queue.id,
+      queueNumber: queue.number,
+      status: queue.status,
+      counter: queue.counter ? {
+        id: queue.counter.id,
+        name: queue.counter.name
+      } : null,
+      createdAt: queue.createdAt.toISOString(),
+      updatedAt: queue.updatedAt.toISOString()
+    }));
+
+    return {
+      status: true,
+      message: "All queues retrieved successfully",
+      data: formattedQueues
+    };
+  } catch (error: unknown) {
+    console.error("Get all queues error:", error);
+    
+    return {
+      status: false,
+      message: error instanceof Error ? error.message : "Failed to retrieve queues",
+      data: null
+    };
+  }
+};

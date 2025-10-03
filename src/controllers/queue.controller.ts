@@ -7,6 +7,8 @@ import {
   SSkipQueue,
   SResetQueues,
   SGetMetrics,
+  SSearchQueue,
+  SGetAllQueues
 } from "../services/queue.service";
 
 export const CClaimQueue = async (
@@ -109,6 +111,45 @@ export const CResetQueues = async (
 
     const result = await SResetQueues(counter_id);
 
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const CSearchQueue = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { q } = req.query;
+    
+    if (!q) {
+      res.status(400).json({
+        status: false,
+        message: "Query parameter 'q' is required",
+        data: null
+      });
+      return;
+    }
+
+    const searchQuery = q.toString();
+    const result = await SSearchQueue(searchQuery);
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const CGetAllQueues = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const result = await SGetAllQueues();
     res.status(200).json(result);
   } catch (error) {
     next(error);

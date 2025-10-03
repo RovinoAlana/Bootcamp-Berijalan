@@ -7,6 +7,8 @@ import {
   CSkipQueue,
   CResetQueues,
   CGetMetrics,
+  CSearchQueue,
+  CGetAllQueues
 } from "../controllers/queue.controller";
 import { MValidate } from "../middlewares/validate.middleware";
 import { MAuthenticate } from "../middlewares/authenticate.middleware";
@@ -22,7 +24,8 @@ router.get("/metrics", CGetMetrics);
 router.post("/claim", CClaimQueue);
 router.post("/release", CReleaseQueue);
 router.get("/current", CGetCurrentQueues);
-
+router.get("/search", CSearchQueue);
+router.get("/", CGetAllQueues);
 router.post("/next", MAuthenticate, MValidate(VNextQueueSchema), CNextQueue);
 router.post("/skip", MAuthenticate, MValidate(VSkipQueueSchema), CSkipQueue);
 router.post(
